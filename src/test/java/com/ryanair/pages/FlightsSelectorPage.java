@@ -2,41 +2,68 @@ package com.ryanair.pages;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class FlightsSelectorPage {
 
+    WebDriver driver;
 
-    @FindBy(xpath = "(//div[@class=\"flights-table-price\"])[2]")
+    public FlightsSelectorPage(WebDriver driver) {
+        this.driver = driver;
+        PageFactory.initElements(driver, this);
+
+    }
+
+
+    @FindBy(xpath = "(//div[@class=\"flight-header__min-price hide-mobile\"])[1]")
     private WebElement selectToFlightButton;
 
-    @FindBy(xpath = "(//div[@class=\"flights-table-price\"])[4]")
+    @FindBy(xpath = "(//span[contains(text(), \"from\")])[2]")
     private WebElement selectReturnFlightButton;
 
     @FindBy(xpath = "//span[contains(text(), \"Standard fare\")]")
     private WebElement selectStandardFareElement;
 
-    @FindBy(xpath = "//span[@class=\"type\" and contains(text(), \"Standard fare\")]")
+    @FindBy(xpath = "(//div[@class=\"flights-table-fares__benefit-list\"])[1]")
     private WebElement selectReturnStandardFareElement;
 
-    public void selectFlights(WebDriver driver) {
+    @FindBy(xpath = "//button[./span[@translate=\"trips.summary.buttons.btn_continue\"]]")
+    private WebElement continueButton;
+
+    public void selectFlights() {
         //select to flight
-        waitForElementToBePresent(driver, selectToFlightButton);
+        waitForElementToBeClickable(selectToFlightButton);
         selectToFlightButton.click();
-        waitForElementToBePresent(driver, selectStandardFareElement);
-        selectStandardFareElement.click();
+
+        Actions actions = new Actions(driver);
+
+        actions.moveToElement(selectStandardFareElement).click().perform();
 
         //select return flight
-        waitForElementToBePresent(driver, selectReturnFlightButton);
+        waitForElementToBeClickable(selectReturnFlightButton);
         selectReturnFlightButton.click();
-        waitForElementToBePresent(driver, selectReturnStandardFareElement);
+
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        waitForElementToBeClickable(selectReturnStandardFareElement);
         selectReturnStandardFareElement.click();
+
+        waitForElementToBeClickable(continueButton);
+        continueButton.click();
     }
 
-    public void waitForElementToBePresent(WebDriver driver, WebElement element) {
+    public void waitForElementToBeClickable(WebElement element) {
         WebDriverWait wait = new WebDriverWait(driver, 5);
-        wait.until(ExpectedConditions.visibilityOf(element));
+        wait.until(ExpectedConditions.elementToBeClickable(element));
     }
+
+
 }

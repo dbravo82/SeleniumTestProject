@@ -5,8 +5,21 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class MainPage {
+
+    WebDriver driver;
+
+    public MainPage(WebDriver driver) {
+        this.driver = driver;
+        PageFactory.initElements(driver, this);
+    }
+
+    @FindBy(xpath = "//span[@class=\"username\" and contains(text(), \"Log in\")]")
+    private WebElement loginButton;
 
     @FindBy(xpath = "//form[@name=\"formFlightSearch\"]//button[contains(@ng-click,\"extendForm\")]")
     private WebElement continueButton;
@@ -48,6 +61,10 @@ public class MainPage {
     @FindBy(xpath = "//cookie-pop-up//core-icon")
     private WebElement cookiePopUp;
 
+    public void goToLogin() {
+        loginButton.click();
+    }
+
     public void enterOrigin(String city) {
         fromField.click();
         fromField.sendKeys(city);
@@ -60,6 +77,7 @@ public class MainPage {
     }
 
     public void selectInitialDate(String day, String month, String year) {
+        waitForElement(dayOutField);
         dayOutField.clear();
         dayOutField.sendKeys(day);
         monthOutField.clear();
@@ -77,7 +95,7 @@ public class MainPage {
         yearBackField.sendKeys(year);
     }
 
-    public void selectPassengers(String number, WebDriver driver) {
+    public void selectPassengers(String number) {
         Actions actions = new Actions(driver);
         actions.moveToElement(passengersField).click().perform();
         adultsNumberField.clear();
@@ -92,4 +110,10 @@ public class MainPage {
     public void closeCookiePopUp() {
         cookiePopUp.click();
     }
+
+    public void waitForElement(WebElement element) {
+        WebDriverWait wait = new WebDriverWait(driver, 5);
+        wait.until(ExpectedConditions.visibilityOf(element));
+    }
+
 }

@@ -1,63 +1,78 @@
 package com.ryanair.tests.booking;
 
-import com.ryanair.pages.FlightsSelectorPage;
-import com.ryanair.pages.MainPage;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import com.ryanair.pages.*;
+import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
+import org.junit.Assert;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.support.PageFactory;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Date;
 import java.util.concurrent.TimeUnit;
+
 
 public class BookingUpTest {
 
     private static final String MAIN_RYANAIR_PAGE = "https://www.ryanair.com/ie/en/";
 
-    private WebDriver webDriver;
-    private MainPage mainPage;
-    private FlightsSelectorPage flightsPage;
+    WebDriver webDriver;
 
-    @Before
-    public void setUp() {
-        System.setProperty("webdriver.chrome.driver", "/Applications/Google Chrome.app/Contents/MacOS/chromedriver");
+    @Given("^user logs in and make a booking from Madrid to Ibiza on 25/09/2018 for 2 adults$")
+    public void givenStatement() {
+        System.setProperty("webdriver.chrome.driver", "./src/test/resources/chromedriver");
         webDriver = new ChromeDriver();
-        mainPage = PageFactory.initElements(webDriver,MainPage.class);
-        flightsPage = PageFactory.initElements(webDriver, FlightsSelectorPage.class);
-        webDriver.manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);
         webDriver.manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS);
-    }
-
-    @After
-    public void tearDown() {
-        //webDriver.close();
-    }
-
-    @Test
-    public void selectDestinnationAndDates() {
+        webDriver.manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);
         webDriver.get(MAIN_RYANAIR_PAGE);
-
-        Date today = new Date();
-        LocalDate localDate = today.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        String day = String.valueOf(localDate.getDayOfMonth() + 2);
-        String returnDay = String.valueOf(localDate.getDayOfMonth() + 5);
-        String month = String.valueOf(localDate.getMonthValue() + 1);
-        String year = String.valueOf(localDate.getYear());
-
+        MainPage mainPage = new MainPage(webDriver);
+        LoginPage loginPage = new LoginPage(webDriver);
+        FlightsSelectorPage flightsPage = new FlightsSelectorPage(webDriver);
+        SeatsSelectorPage seatsPage = new SeatsSelectorPage(webDriver);
+        BookingExtrasPage extrasPage = new BookingExtrasPage(webDriver);
 
         mainPage.closeCookiePopUp();
+        mainPage.goToLogin();
+        loginPage.login("daniel.bravo82@gmail.com", "Test_1234");
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         mainPage.enterOrigin("Madrid");
         mainPage.enterDestination("Ibiza");
-        mainPage.selectInitialDate(day, month, year);
-        mainPage.selectFinalDate(returnDay, month, year);
-        mainPage.selectPassengers("2", webDriver);
+        mainPage.selectInitialDate("25", "09", "2018");
+        mainPage.selectFinalDate("28", "09", "2018");
+        mainPage.selectPassengers("2");
         mainPage.setSearchFlighsButton();
 
-        flightsPage.selectFlights(webDriver);
+        flightsPage.selectFlights();
+
+        seatsPage.closeSeatSelector();
+
+        extrasPage.clickCheckout();
 
     }
+
+    @When("^user pays for booking with card number 2312334567213444 expiry on 03/2020 and ccv 333$")
+    public void whenStatement() {
+        PaymentPage paymentPage = new PaymentPage(webDriver);
+
+        paymentPage.giveFirstPassengerDetails("Daniel", "Bravo", "Mr");
+        paymentPage.giveSecondPassengerDetails("Ana", "Sanchez", "Mrs");
+        paymentPage.fillPhoneNumberInfo("Spain", "623154786");
+        paymentPage.fillCardInfo("2312334567213444", "MasterCard", "3", "2020",
+                "333", "Daniel Bravo");
+        paymentPage.fillBillingInfo("C\\ Rio ebro 4", "Madrid", "Spain", "28098");
+        paymentPage.pay();
+    }
+
+    @Then("^user should get payment declined message$")
+    public void thenStatement() {
+        PaymentPage paymentPage = new PaymentPage(webDriver);
+
+        Assert.assertTrue(paymentPage.isDeclinedPayment());
+    }
+
 }
