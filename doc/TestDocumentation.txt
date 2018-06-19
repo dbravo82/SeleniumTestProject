@@ -1,0 +1,23 @@
+* Testing solution:
+    I chose to use XPath expressions to locate all the elements because there are many elements
+    without an id or name to find them.
+    In the booking page chosing concrete flights the flights for go and return have the same elements and
+    attributes so i need to put a sleep time to be sure that the first flight is already selected and i can
+    select the return flight
+
+    I close the cookies policy pop up to make visible some elements that i need to interact to later
+
+* How to run the test
+    Chrome driver is in the project and i set property webdriver.chrome.driver pointing to this file.
+    Therefore you don't need any configuration for this.
+    There are some requirements to run this test:
+        - Google chrome browser
+        - Java 1.8
+        - maven
+    Execute:
+        mvn test
+    In the project root directory
+
+* Reports
+    Find reporting for the test under folder reports/test-report. Open index.html file
+

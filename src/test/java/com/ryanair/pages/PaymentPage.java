@@ -136,16 +136,16 @@ public class PaymentPage {
     public void pay() {
         Actions actions = new Actions(driver);
         actions.moveToElement(acceptPolicyCheckBox).click().perform();
-        //acceptPolicyCheckBox.click();
         payNowButton.click();
     }
 
     public boolean isDeclinedPayment() {
-        return paymentDeclinedMessage != null;
-    }
 
-    public void waitForElementToBeClickable(WebElement element) {
+        waitForElement(paymentDeclinedMessage);
+        return paymentDeclinedMessage.isDisplayed();
+    }
+    public void waitForElement(WebElement element) {
         WebDriverWait wait = new WebDriverWait(driver, 5);
-        wait.until(ExpectedConditions.elementToBeClickable(element));
+        wait.until(ExpectedConditions.visibilityOf(element));
     }
 }

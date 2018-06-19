@@ -19,7 +19,7 @@ public class FlightsSelectorPage {
     }
 
 
-    @FindBy(xpath = "(//div[@class=\"flight-header__min-price hide-mobile\"])[1]")
+    @FindBy(xpath = "(//span[contains(text(), \"from\")])[2]")
     private WebElement selectToFlightButton;
 
     @FindBy(xpath = "(//span[contains(text(), \"from\")])[2]")
@@ -43,18 +43,24 @@ public class FlightsSelectorPage {
 
         actions.moveToElement(selectStandardFareElement).click().perform();
 
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         //select return flight
         waitForElementToBeClickable(selectReturnFlightButton);
         selectReturnFlightButton.click();
 
         try {
-            Thread.sleep(3000);
+            Thread.sleep(2000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-        waitForElementToBeClickable(selectReturnStandardFareElement);
-        selectReturnStandardFareElement.click();
+        actions.moveToElement(selectReturnStandardFareElement).click().perform();
 
         waitForElementToBeClickable(continueButton);
         continueButton.click();

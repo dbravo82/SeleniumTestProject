@@ -22,10 +22,18 @@ public class SeatsSelectorPage {
     public void closeSeatSelector() {
         waitForElementToBeVisible(noThanksButton);
         noThanksButton.click();
+        if (noThanksButton.isDisplayed()) {
+            waitForElementToClose(noThanksButton);
+        }
     }
 
     public void waitForElementToBeVisible(WebElement element) {
         WebDriverWait wait = new WebDriverWait(driver, 5);
         wait.until(ExpectedConditions.elementToBeClickable(element));
+    }
+
+    public void waitForElementToClose(WebElement element) {
+        WebDriverWait wait = new WebDriverWait(driver, 5);
+        wait.until(ExpectedConditions.invisibilityOf(element));
     }
 }

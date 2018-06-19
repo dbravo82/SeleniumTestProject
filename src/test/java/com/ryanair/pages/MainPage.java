@@ -72,7 +72,7 @@ public class MainPage {
 
     public void enterDestination(String city) {
         toField.sendKeys(city);
-        //to exit from pick country menu
+        //exit from pick country menu
         continueButton.sendKeys(Keys.ENTER);
     }
 
